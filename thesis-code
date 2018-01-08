@@ -1,0 +1,1207 @@
+Include quark-lept, four-lept, and dipole (semi-massless limit)
+
+Knobs
+
+Set assumptions and integration bounds
+
+m3 = 0; m4 = 0;
+
+lowerbound = ((m4^2 - m3^2)/(2 Sqrt[s]))^2 - (p1norm - p3norm)^2 // Expand;
+lowerbound = 
+  lowerbound /. {p1norm -> Sqrt[s]/2, p3norm -> Sqrt[E3^2 - m3^2]} // Expand;
+lowerbound = 
+  lowerbound /. {E1 -> Sqrt[s]/2, E3 -> (s + m3^2 - m4^2)/(2 Sqrt[s])} // 
+   Expand;
+upperbound = ((m4^2 - m3^2)/(2 Sqrt[s]))^2 - (p1norm + p3norm)^2 /. {pf -> (
+      s - m4^2)/(2 Sqrt[s])} // Expand;
+upperbound = upperbound /. {p1norm -> Sqrt[s]/2, p3norm -> Sqrt[E3^2 - m3^2]};
+upperbound = 
+  upperbound /. {E1 -> Sqrt[s]/2, E3 -> (s + m3^2 - m4^2)/(2 Sqrt[s])} // 
+   Expand;
+InitialStates = 4;
+
+Clear[m3, m4];
+
+Set masses
+
+m1 = 0; m2 = 0;(*m3=0;m4=0;*)
+ScalarProduct[p1, p1] = m1^2; ScalarProduct[p2, p2] = m2^2;
+ScalarProduct[p3, p3] = m3^2; ScalarProduct[p4, p4] = m4^2;
+
+
+Set scalar products of external momenta to Mandelstam variables
+
+ScalarProduct[p1, p2] = s/2;
+ScalarProduct[p1, p3] = (m3^2 - t)/2;
+ScalarProduct[p1, p4] = (s + t - m3^2)/2;
+ScalarProduct[p3, p4] = (s - m3^2 - m4^2)/2;
+ScalarProduct[p2, p4] = (m4^2 - t)/2;
+ScalarProduct[p2, p3] = (s + t - m4^2)/2;
+
+Sec scalar products of internal momenta to Mandelstam variables
+
+ScalarProduct[p, p] = s;
+ScalarProduct[p1, p] = ScalarProduct[p1, p1] + ScalarProduct[p1, p2];
+ScalarProduct[p2, p] = ScalarProduct[p2, p1] + ScalarProduct[p2, p2]; 
+ScalarProduct[p3, p] = ScalarProduct[p3, p1] + ScalarProduct[p3, p2]; 
+ScalarProduct[p4, p] = ScalarProduct[p4, p1] + ScalarProduct[p4, p2];
+
+Set Kinematic Rules and Assumptions
+
+Setq = {p -> p1 + p2};
+
+Amplitude for down, up, strange, charge, bottom quarks (both hands)
+
+Control chirality
+
+p3spinor = SpinorUBar[Momentum[p3], m3];
+p4spinor = SpinorV[Momentum[p4], m4];
+p2spinor = SpinorVBar[Momentum[p2], m2];
+p1spinor = SpinorU[Momentum[p1], m1];
+
+Input matrix element for down/up quark (split into two terms of EM tensor)
+
+\[CapitalPi] = \
+\[CapitalSigma]\[CapitalPi](*s(f\[Rho]0^2/(2m\[Rho]0^2(m\[Rho]0^2-p0))+f\
+\[Omega]^2/(2m\[Omega]^2(m\[Omega]^2-p0))+1/p0Log[s0d/(s0d-p0)](1/(4\[Pi]^2))(\
+1+\[Alpha]s/\[Pi]))*);
+
+(*wehere p0=p^2+i\[Epsilon]*)
+
+Amp1 = -ge^2/
+  s (p2spinor.GA[\[Mu]].p1spinor) (-s) \[CapitalPi] (CVR/\[CapitalLambda]^2 \
+p3spinor.GA[\[Mu]].GA[7].p4spinor + 
+    CVL/\[CapitalLambda]^2 p3spinor.GA[\[Mu]].GA[6].p4spinor)
+
+ge^2 \[CapitalSigma]\[CapitalPi] Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Mu].(u(Overscript[p1, _])) ((CVL Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^6.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2+(CVR Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^7.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2)
+
+Amp2 = -ge^2/
+  s (p2spinor.GA[\[Nu]].p1spinor) (FourVector[p, \[Mu]] FourVector[
+     p, \[Nu]]) \[CapitalPi] (CVR/\[CapitalLambda]^2 p3spinor.GA[\[Mu]].GA[
+       7].p4spinor + CVL/\[CapitalLambda]^2 p3spinor.GA[\[Mu]].GA[6].p4spinor)
+
+-((ge^2 \[CapitalSigma]\[CapitalPi] Overscript[p, _]^\[Mu] Overscript[p, _]^\[Nu] Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Nu].(u(Overscript[p1, _])) ((CVL Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^6.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2+(CVR Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^7.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2))/s)
+
+Ampdu = Amp1 + Amp2
+
+ge^2 \[CapitalSigma]\[CapitalPi] Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Mu].(u(Overscript[p1, _])) ((CVL Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^6.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2+(CVR Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^7.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2)-(ge^2 \[CapitalSigma]\[CapitalPi] Overscript[p, _]^\[Mu] Overscript[p, _]^\[Nu] Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Nu].(u(Overscript[p1, _])) ((CVL Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^6.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2+(CVR Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^7.(v(Overscript[p4, _],m4)))/\[CapitalLambda]^2))/s
+
+Ampdu = Amp1 + Amp2 // Simplify
+
+(ge^2 \[CapitalSigma]\[CapitalPi] (s Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Mu].(u(Overscript[p1, _]))-Overscript[p, _]^\[Mu] Overscript[p, _]^\[Nu] Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Nu].(u(Overscript[p1, _]))) (CVL Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^6.(v(Overscript[p4, _],m4))+CVR Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^7.(v(Overscript[p4, _],m4))))/(\[CapitalLambda]^2 s)
+
+Input matrix element for strange quark (split into two terms of EM tensor)
+
+\[CapitalPi] = 
+  0(*s(f\[Phi]^2/(m\[Phi]^2(m\[Phi]^2-p0))+1/p0Log[s0s/(s0s-p0)](1/(4\[Pi]^2))\
+(1+\[Alpha]s/\[Pi]))*);
+
+(*wehere p0=p^2+i\[Epsilon]*)
+
+Amp1 = -ge^2/
+  s (p2spinor.GA[\[Mu]].p1spinor) (-s) \[CapitalPi] (CVR/\[CapitalLambda]^2 \
+p3spinor.GA[\[Mu]].GA[7].p4spinor + 
+    CVL/\[CapitalLambda]^2 p3spinor.GA[\[Mu]].GA[6].p4spinor)
+
+0
+
+Amp2 = -ge^2/
+  s (p2spinor.GA[\[Nu]].p1spinor) (FourVector[p, \[Mu]] FourVector[
+     p, \[Nu]]) \[CapitalPi] (CVR/\[CapitalLambda]^2 p3spinor.GA[\[Mu]].GA[
+       7].p4spinor + CVL/\[CapitalLambda]^2 p3spinor.GA[\[Mu]].GA[6].p4spinor)
+
+0
+
+Amps = Amp1 + Amp2
+
+0
+
+Amps = Amp1 + Amp2 // Simplify
+
+0
+
+Amplitude for four-fermion (left-left)
+
+Control chirality
+
+p3spinor = SpinorUBar[Momentum[p3], m3].GA[6];
+p4spinor = GA[7].SpinorV[Momentum[p4], m4];
+p2spinor = SpinorVBar[Momentum[p2], m2];
+p1spinor = SpinorU[Momentum[p1], m1];
+
+Diagram 1 (four-fermion vertex)
+
+Define variables specific for each Operator
+
+OverallFactorOp1 = gLLLL/\[CapitalLambda]^2; OverallFactorOp2 = gRRRR/\
+\[CapitalLambda]^2;
+OverallFactorOp3 = gLLRR/\[CapitalLambda]^2; OverallFactorOp4 = gRRLL/\
+\[CapitalLambda]^2; 
+
+Op1P1 = GA[7]; Op1P2 = GA[7];
+Op2P1 = GA[6]; Op2P2 = GA[6];
+Op3P1 = GA[7]; Op3P2 = GA[6];
+Op4P1 = GA[6]; Op4P2 = GA[7];
+
+
+Define variables applicable to all Operators
+
+VF1 = DiracMatrix[\[Mu]];
+VF2 = DiracMatrix[\[Mu]];
+Prop = 1;
+InitialStates = 4;
+S = 1;
+
+Find Amps
+
+Amp1 = (OverallFactorOp1) \
+p3spinor.VF1.Op1P1.p4spinor.p2spinor.VF2.Op1P2.p1spinor // DiracSimplify
+
+(gLLLL (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2
+
+Amp2 = OverallFactorOp2.p3spinor.VF1.Op2P1.p4spinor.p2spinor.VF2.Op2P2.\
+p1spinor // DiracSimplify
+
+0
+
+Amp3 = OverallFactorOp3.p3spinor.VF1.Op3P1.p4spinor.p2spinor.VF2.Op3P2.\
+p1spinor // DiracSimplify
+
+(gLLRR (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2
+
+Amp4 = OverallFactorOp4.p3spinor.VF1.Op4P1.p4spinor.p2spinor.VF2.Op4P2.\
+p1spinor // DiracSimplify
+
+0
+
+Diagram 2 (time photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op5P = GA[7];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op5P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp5 = t1.Prop.t2 // Simplify;
+Amp5 = Amp5 // Contract;
+Amp5 = Amp5 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op6P = GA[6];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op6P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp6 = t1.Prop.t2 // Simplify;
+Amp6 = Amp6 // Contract;
+Amp6 = Amp6 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Diagram 3 (space photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op7P = GA[7];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op7P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp7 = t1.Prop.t2 // Simplify;
+Amp7 = Amp7 // Contract;
+Amp7 = Amp7 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]]
+Amp7 = Amp7 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+(I gLR v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^6.Overscript[\[Gamma], _]^\[Nu].(\[CurlyPhi](Overscript[p1, _])).(\[CurlyPhi](-Overscript[p2, _])).(-\[Sigma]^(\[Nu]Overscript[q3, _])).Overscript[\[Gamma], _]^7.Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(\[CapitalLambda]^2 Overscript[q3, _]^2)
+
+(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)-(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op8P = GA[6];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op8P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp8 = t1.Prop.t2 // Simplify;
+Amp8 = Amp8 // Contract;
+Amp8 = Amp8 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Calculate total cross section
+
+1. Find AmpTot (/not/ accounting for antisymmetrization)
+
+AmpFourFerLL = Amp1 + Amp2 + Amp3 + Amp4 + Amp5 + Amp6 // DiracOrder
+
+(gLLLL (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2+(gLLRR (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2
+
+Amplitude for four-fermion (right-right)
+
+Control chirality
+
+p3spinor = SpinorUBar[Momentum[p3], m3].GA[7];
+p4spinor = GA[6].SpinorV[Momentum[p4], m4];
+p2spinor = SpinorVBar[Momentum[p2], m2];
+p1spinor = SpinorU[Momentum[p1], m1];
+
+Diagram 1 (four-fermion vertex)
+
+Define variables specific for each Operator
+
+OverallFactorOp1 = gLLLL/\[CapitalLambda]^2; OverallFactorOp2 = gRRRR/\
+\[CapitalLambda]^2;
+OverallFactorOp3 = gLLRR/\[CapitalLambda]^2; OverallFactorOp4 = gRRLL/\
+\[CapitalLambda]^2; 
+
+Op1P1 = GA[7]; Op1P2 = GA[7];
+Op2P1 = GA[6]; Op2P2 = GA[6];
+Op3P1 = GA[7]; Op3P2 = GA[6];
+Op4P1 = GA[6]; Op4P2 = GA[7];
+
+
+Define variables applicable to all Operators
+
+VF1 = DiracMatrix[\[Mu]];
+VF2 = DiracMatrix[\[Mu]];
+Prop = 1;
+InitialStates = 4;
+S = 1;
+
+Find Amps
+
+Amp1 = (OverallFactorOp1) \
+p3spinor.VF1.Op1P1.p4spinor.p2spinor.VF2.Op1P2.p1spinor // DiracSimplify
+
+0
+
+Amp2 = OverallFactorOp2.p3spinor.VF1.Op2P1.p4spinor.p2spinor.VF2.Op2P2.\
+p1spinor // DiracSimplify
+
+(gRRRR (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2
+
+Amp3 = OverallFactorOp3.p3spinor.VF1.Op3P1.p4spinor.p2spinor.VF2.Op3P2.\
+p1spinor // DiracSimplify
+
+0
+
+Amp4 = OverallFactorOp4.p3spinor.VF1.Op4P1.p4spinor.p2spinor.VF2.Op4P2.\
+p1spinor // DiracSimplify
+
+(gRRLL (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2
+
+Diagram 2 (time photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op5P = GA[7];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op5P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp5 = t1.Prop.t2 // Simplify;
+Amp5 = Amp5 // Contract;
+Amp5 = Amp5 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op6P = GA[6];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op6P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp6 = t1.Prop.t2 // Simplify;
+Amp6 = Amp6 // Contract;
+Amp6 = Amp6 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Diagram 3 (space photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op7P = GA[7];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op7P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp7 = t1.Prop.t2 // Simplify;
+Amp7 = Amp7 // Contract;
+Amp7 = Amp7 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]]
+Amp7 = Amp7 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+(I gLR v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^7.Overscript[\[Gamma], _]^\[Nu].(\[CurlyPhi](Overscript[p1, _])).(\[CurlyPhi](-Overscript[p2, _])).(-\[Sigma]^(\[Nu]Overscript[q3, _])).Overscript[\[Gamma], _]^7.Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(\[CapitalLambda]^2 Overscript[q3, _]^2)
+
+0
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op8P = GA[6];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op8P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp8 = t1.Prop.t2 // Simplify;
+Amp8 = Amp8 // Contract;
+Amp8 = Amp8 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)-(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)
+
+Calculate total cross section
+
+1. Find AmpTot (/not/ accounting for antisymmetrization)
+
+AmpFourFerRR = Amp1 + Amp2 + Amp3 + Amp4 + Amp5 + Amp6 // DiracOrder
+
+(gRRLL (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2+(gRRRR (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/\[CapitalLambda]^2
+
+Amplitude for dipole (left-right)
+
+Setq = {q2 -> p1 + p2, q3 -> p1 - p3}
+
+{q2->p1+p2,q3->p1-p3}
+
+Control chirality
+
+p3spinor = SpinorUBar[Momentum[p3], m3].GA[7];
+p4spinor = GA[7].SpinorV[Momentum[p4], m4];
+p2spinor = SpinorVBar[Momentum[p2], m2];
+p1spinor = SpinorU[Momentum[p1], m1];
+
+Diagram 1 (four-fermion vertex)
+
+Define variables specific for each Operator
+
+OverallFactorOp1 = gLLLL/\[CapitalLambda]^2; OverallFactorOp2 = gRRRR/\
+\[CapitalLambda]^2;
+OverallFactorOp3 = gLLRR/\[CapitalLambda]^2; OverallFactorOp4 = gRRLL/\
+\[CapitalLambda]^2; 
+
+Op1P1 = GA[7]; Op1P2 = GA[7];
+Op2P1 = GA[6]; Op2P2 = GA[6];
+Op3P1 = GA[7]; Op3P2 = GA[6];
+Op4P1 = GA[6]; Op4P2 = GA[7];
+
+
+Define variables applicable to all Operators
+
+VF1 = DiracMatrix[\[Mu]];
+VF2 = DiracMatrix[\[Mu]];
+Prop = 1;
+InitialStates = 4;
+S = 1;
+
+Find Amps
+
+Amp1 = (OverallFactorOp1) \
+p3spinor.VF1.Op1P1.p4spinor.p2spinor.VF2.Op1P2.p1spinor // DiracSimplify
+
+0
+
+Amp2 = OverallFactorOp2.p3spinor.VF1.Op2P1.p4spinor.p2spinor.VF2.Op2P2.\
+p1spinor // DiracSimplify
+
+0
+
+Amp3 = OverallFactorOp3.p3spinor.VF1.Op3P1.p4spinor.p2spinor.VF2.Op3P2.\
+p1spinor // DiracSimplify
+
+0
+
+Amp4 = OverallFactorOp4.p3spinor.VF1.Op4P1.p4spinor.p2spinor.VF2.Op4P2.\
+p1spinor // DiracSimplify
+
+0
+
+Diagram 2 (time photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op5P = GA[7];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op5P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp5 = t1.Prop.t2 // Simplify;
+Amp5 = Amp5 // Contract;
+Amp5 = Amp5 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q2, _]).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q2, _]^2)-(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q2, _]).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q2, _]^2)
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op6P = GA[6];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op6P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp6 = t1.Prop.t2 // Simplify;
+Amp6 = Amp6 // Contract;
+Amp6 = Amp6 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Diagram 3 (space photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op7P = GA[7];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op7P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp7 = t1.Prop.t2 // Simplify;
+Amp7 = Amp7 // Contract;
+Amp7 = Amp7 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)-(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op8P = GA[6];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op8P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp8 = t1.Prop.t2 // Simplify;
+Amp8 = Amp8 // Contract;
+Amp8 = Amp8 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Calculate total cross section
+
+1. Find AmpTot (/not/ accounting for antisymmetrization)
+
+AmpTot = Amp1 + Amp2 + Amp3 + Amp4 + Amp5 + Amp6 /. Setq // DiracOrder
+
+(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(\[CapitalLambda]^2 s)-(gLR v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4)))/(\[CapitalLambda]^2 s)
+
+AmpDipoleLR = AmpTot /. \[Nu] -> \[Mu] // Simplify
+
+(gLR v Subscript[\[Alpha], em] ((\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4))-(\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4))))/(\[CapitalLambda]^2 s)
+
+Amplitude for dipole (right-left)
+
+Control chirality
+
+p3spinor = SpinorUBar[Momentum[p3], m3].GA[6];
+p4spinor = GA[6].SpinorV[Momentum[p4], m4];
+p2spinor = SpinorVBar[Momentum[p2], m2];
+p1spinor = SpinorU[Momentum[p1], m1];
+
+Diagram 1 (four-fermion vertex)
+
+Define variables specific for each Operator
+
+OverallFactorOp1 = gLLLL/\[CapitalLambda]^2; OverallFactorOp2 = gRRRR/\
+\[CapitalLambda]^2;
+OverallFactorOp3 = gLLRR/\[CapitalLambda]^2; OverallFactorOp4 = gRRLL/\
+\[CapitalLambda]^2; 
+
+Op1P1 = GA[7]; Op1P2 = GA[7];
+Op2P1 = GA[6]; Op2P2 = GA[6];
+Op3P1 = GA[7]; Op3P2 = GA[6];
+Op4P1 = GA[6]; Op4P2 = GA[7];
+
+
+Define variables applicable to all Operators
+
+VF1 = DiracMatrix[\[Mu]];
+VF2 = DiracMatrix[\[Mu]];
+Prop = 1;
+InitialStates = 4;
+S = 1;
+
+Find Amps
+
+Amp1 = (OverallFactorOp1) \
+p3spinor.VF1.Op1P1.p4spinor.p2spinor.VF2.Op1P2.p1spinor // DiracSimplify
+
+0
+
+Amp2 = OverallFactorOp2.p3spinor.VF1.Op2P1.p4spinor.p2spinor.VF2.Op2P2.\
+p1spinor // DiracSimplify
+
+0
+
+Amp3 = OverallFactorOp3.p3spinor.VF1.Op3P1.p4spinor.p2spinor.VF2.Op3P2.\
+p1spinor // DiracSimplify
+
+0
+
+Amp4 = OverallFactorOp4.p3spinor.VF1.Op4P1.p4spinor.p2spinor.VF2.Op4P2.\
+p1spinor // DiracSimplify
+
+0
+
+Diagram 2 (time photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op5P = GA[7];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op5P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp5 = t1.Prop.t2 // Simplify;
+Amp5 = Amp5 // Contract;
+Amp5 = Amp5 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op6P = GA[6];
+t1 = (I ge) p2spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q2, q2];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p3spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op6P.p4spinor (2 FourVector[q2, \[Lambda]]) (-I);
+Amp6 = t1.Prop.t2 // Simplify;
+Amp6 = Amp6 // Contract;
+Amp6 = Amp6 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q2, _]).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q2, _]^2)-(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q2, _]).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q2, _]^2)
+
+Diagram 3 (space photon propagator)
+
+Amp of producing right antitau (Subscript[g, rad]^LR)
+
+Op7P = GA[7];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gLR)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op7P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp7 = t1.Prop.t2 // Simplify;
+Amp7 = Amp7 // Contract;
+Amp7 = Amp7 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+0
+
+Amp of producing left antitau (Subscript[g, rad]^RL)
+
+Op8P = GA[6];
+t1 = (I ge) p3spinor.GA[\[Mu]].p1spinor;
+Prop = -I MetricTensor[\[Mu], \[Nu]]/ScalarProduct[q3, q3];
+t2 = ((-ge v gRL)/(
+    8 \[Pi] \[CapitalLambda]^2)) p2spinor.DiracSigma[GA[\[Lambda]], 
+     GA[\[Nu]]].Op8P.p4spinor (2 FourVector[q3, \[Lambda]]) (-I);
+Amp8 = t1.Prop.t2 // Simplify;
+Amp8 = Amp8 // Contract;
+Amp8 = Amp8 /. ge -> Sqrt[4 \[Pi] Subscript[\[Alpha], em]] // DiracSimplify
+
+(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)-(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot]Overscript[q3, _]).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(2 \[CapitalLambda]^2 Overscript[q3, _]^2)
+
+Calculate total cross section
+
+1. Find AmpTot (/not/ accounting for antisymmetrization)
+
+AmpTot = Amp1 + Amp2 + Amp3 + Amp4 + Amp5 + Amp6 /. Setq // DiracOrder
+
+(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(\[CapitalLambda]^2 s)-(gRL v Subscript[\[Alpha], em] (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))/(\[CapitalLambda]^2 s)
+
+AmpDipoleRL = AmpTot /. \[Nu] -> \[Mu] // Simplify
+
+(gRL v Subscript[\[Alpha], em] ((\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4))-(\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4))))/(\[CapitalLambda]^2 s)
+
+AmpSquared and Cross Section
+
+Amp = Ampdu + Amps + AmpFourFerLL + AmpFourFerRR + AmpDipoleLR + AmpDipoleRL //
+   Simplify
+
+1/\[CapitalLambda]^2 ((ge^2 \[CapitalSigma]\[CapitalPi] (s Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Mu].(u(Overscript[p1, _]))-Overscript[p, _]^\[Mu] Overscript[p, _]^\[Nu] Overscript[v, _](Overscript[p2, _]).Overscript[\[Gamma], _]^\[Nu].(u(Overscript[p1, _]))) (CVL Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^6.(v(Overscript[p4, _],m4))+CVR Overscript[u, _](Overscript[p3, _],m3).Overscript[\[Gamma], _]^\[Mu].Overscript[\[Gamma], _]^7.(v(Overscript[p4, _],m4))))/s+(gLR v Subscript[\[Alpha], em] ((\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4))-(\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4))))/s+(gRL v Subscript[\[Alpha], em] ((\[CurlyPhi](-Overscript[p2, _])).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4))-(\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).(Overscript[\[Gamma], _]\[CenterDot](Overscript[p1, _]+Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4))))/s+gLLLL (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4))+gLLRR (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](-Overscript[p4, _],m4))+gRRLL (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^7.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4))+gRRRR (\[CurlyPhi](-Overscript[p2, _])).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](Overscript[p1, _])) (\[CurlyPhi](Overscript[p3, _],m3)).Overscript[\[Gamma], _]^$MU\[InvisibleApplication](1).Overscript[\[Gamma], _]^6.(\[CurlyPhi](-Overscript[p4, _],m4)))
+
+Find AmpSquared using Fermion Spin Sun
+
+AmpSquared = (1/InitialStates) FermionSpinSum[
+        Amp ComplexConjugate[Amp /. {\[Mu] -> \[Sigma], \[Nu] -> \[Lambda]}] //
+          Expand] /. DiracTrace -> Tr // DiracSimplify // Contract // Simplify;
+AmpSquared = AmpSquared /. Tr[0] -> 0 // Simplify
+
+1/(s \[CapitalLambda]^4) (-2 ((m3^4-(2 m4^2+s) m3^2+m4^4-m4^2 s) gLR^2-8 gRL m3 m4 s gLR+gRL^2 (m3^4-(2 m4^2+s) m3^2+m4^4-m4^2 s)) v^2 Subsuperscript[\[Alpha], em, 2]-2 s v (-gRL gRRLL m3^3-gRL gRRRR m3^3-CVR ge^2 gLR \[CapitalSigma]\[CapitalPi] m3^3-CVL ge^2 gRL \[CapitalSigma]\[CapitalPi] m3^3+2 gLR gRRLL m4 m3^2+2 gLR gRRRR m4 m3^2+CVL ge^2 gLR m4 \[CapitalSigma]\[CapitalPi] m3^2+CVR ge^2 gRL m4 \[CapitalSigma]\[CapitalPi] m3^2+gRL gRRLL m4^2 m3+gRL gRRRR m4^2 m3+gRL gRRLL s m3+gRL gRRRR s m3+CVR ge^2 gLR m4^2 \[CapitalSigma]\[CapitalPi] m3+CVL ge^2 gRL m4^2 \[CapitalSigma]\[CapitalPi] m3+CVR ge^2 gLR s \[CapitalSigma]\[CapitalPi] m3+CVL ge^2 gRL s \[CapitalSigma]\[CapitalPi] m3-2 gLR gRRLL m4^3-2 gLR gRRRR m4^3+2 gLR gRRLL m4 s+2 gLR gRRRR m4 s+gLLLL (2 gRL m4 (m3^2-m4^2+s)+gLR m3 (-m3^2+m4^2+s))+gLLRR (2 gRL m4 (m3^2-m4^2+s)+gLR m3 (-m3^2+m4^2+s))-CVL ge^2 gLR m4^3 \[CapitalSigma]\[CapitalPi]-CVR ge^2 gRL m4^3 \[CapitalSigma]\[CapitalPi]+CVL ge^2 gLR m4 s \[CapitalSigma]\[CapitalPi]+CVR ge^2 gRL m4 s \[CapitalSigma]\[CapitalPi]) Subscript[\[Alpha], em]+s (2 CVL^2 m3^2 m4^2 \[CapitalSigma]\[CapitalPi]^2 ge^4+2 CVR^2 m3^2 m4^2 \[CapitalSigma]\[CapitalPi]^2 ge^4+CVL^2 s^2 \[CapitalSigma]\[CapitalPi]^2 ge^4+CVR^2 s^2 \[CapitalSigma]\[CapitalPi]^2 ge^4+2 CVL^2 t^2 \[CapitalSigma]\[CapitalPi]^2 ge^4+2 CVR^2 t^2 \[CapitalSigma]\[CapitalPi]^2 ge^4-CVL^2 m3^2 s \[CapitalSigma]\[CapitalPi]^2 ge^4-CVR^2 m3^2 s \[CapitalSigma]\[CapitalPi]^2 ge^4-CVL^2 m4^2 s \[CapitalSigma]\[CapitalPi]^2 ge^4-CVR^2 m4^2 s \[CapitalSigma]\[CapitalPi]^2 ge^4+4 CVL CVR m3 m4 s \[CapitalSigma]\[CapitalPi]^2 ge^4-2 CVL^2 m3^2 t \[CapitalSigma]\[CapitalPi]^2 ge^4-2 CVR^2 m3^2 t \[CapitalSigma]\[CapitalPi]^2 ge^4-2 CVL^2 m4^2 t \[CapitalSigma]\[CapitalPi]^2 ge^4-2 CVR^2 m4^2 t \[CapitalSigma]\[CapitalPi]^2 ge^4+2 CVL^2 s t \[CapitalSigma]\[CapitalPi]^2 ge^4+2 CVR^2 s t \[CapitalSigma]\[CapitalPi]^2 ge^4+2 CVL gRRLL m3^2 m4^2 \[CapitalSigma]\[CapitalPi] ge^2+2 CVL gRRRR m3^2 m4^2 \[CapitalSigma]\[CapitalPi] ge^2+2 CVL gRRRR s^2 \[CapitalSigma]\[CapitalPi] ge^2+2 CVL gRRLL t^2 \[CapitalSigma]\[CapitalPi] ge^2+2 CVL gRRRR t^2 \[CapitalSigma]\[CapitalPi] ge^2-2 CVL gRRRR m3^2 s \[CapitalSigma]\[CapitalPi] ge^2-2 CVL gRRRR m4^2 s \[CapitalSigma]\[CapitalPi] ge^2+2 CVR gRRLL m3 m4 s \[CapitalSigma]\[CapitalPi] ge^2+2 CVR gRRRR m3 m4 s \[CapitalSigma]\[CapitalPi] ge^2-2 CVL gRRLL m3^2 t \[CapitalSigma]\[CapitalPi] ge^2-2 CVL gRRRR m3^2 t \[CapitalSigma]\[CapitalPi] ge^2-2 CVL gRRLL m4^2 t \[CapitalSigma]\[CapitalPi] ge^2-2 CVL gRRRR m4^2 t \[CapitalSigma]\[CapitalPi] ge^2+4 CVL gRRRR s t \[CapitalSigma]\[CapitalPi] ge^2+gRRLL^2 s^2+gRRRR^2 s^2-gRRLL^2 m3^2 s-gRRRR^2 m3^2 s-gRRLL^2 m4^2 s-gRRRR^2 m4^2 s+gLLLL^2 s (-m3^2-m4^2+s)+gLLRR^2 s (-m3^2-m4^2+s)+2 gLLRR ((CVL m3 m4 s+CVR (m3^2-t) (m4^2-t)) \[CapitalSigma]\[CapitalPi] ge^2+4 gRRRR m3 m4 s)+2 gLLLL ((CVL m3 m4 s-CVR (m3^2-s-t) (-m4^2+s+t)) \[CapitalSigma]\[CapitalPi] ge^2+4 gRRLL m3 m4 s)))
+
+Calculate cross section
+
+input = AmpSquared /. p0 -> s;
+\[Sigma]hadrons = -\!\(
+\*SubsuperscriptBox[\(\[Integral]\), \(lowerbound\), \(upperbound\)]\(\((
+\*FractionBox[\(1\), \(64  \[Pi]\ s\)])\) \((
+\*FractionBox[\(1\), 
+SuperscriptBox[\((
+\*SqrtBox[\(s\)]/2)\), \(2\)]])\) input\ \[DifferentialD]t\)\) // Simplify
+
+1/(48 \[Pi] \[CapitalLambda]^4 s^2) (6 CVL^2 ge^4 m3^2 m4^2 s \[CapitalSigma]\[CapitalPi]^2+2 CVL^2 ge^4 s^3 \[CapitalSigma]\[CapitalPi]^2-6 s v Subscript[\[Alpha], em] (ge^2 \[CapitalSigma]\[CapitalPi] (s (CVL gLR m4+CVL gRL m3+CVR gLR m3+CVR gRL m4)-(m3-m4) (m3+m4) (-CVL gLR m4+CVL gRL m3+CVR gLR m3-CVR gRL m4))+gLLLL s (gLR m3+2 gRL m4)-gLLLL (m3-m4) (m3+m4) (gLR m3-2 gRL m4)+gLLRR s (gLR m3+2 gRL m4)-gLLRR (m3-m4) (m3+m4) (gLR m3-2 gRL m4)+(gRRLL+gRRRR) (2 gLR m4 (m3^2-m4^2+s)+gRL m3 (-m3^2+m4^2+s)))+12 CVL CVR ge^4 m3 m4 s^2 \[CapitalSigma]\[CapitalPi]^2+6 CVL ge^2 gLLLL m3 m4 s^2 \[CapitalSigma]\[CapitalPi]+6 CVL ge^2 gLLRR m3 m4 s^2 \[CapitalSigma]\[CapitalPi]+6 CVL ge^2 gRRLL m3^2 m4^2 s \[CapitalSigma]\[CapitalPi]+3 CVL ge^2 gRRLL m3^2 s^2 \[CapitalSigma]\[CapitalPi]+3 CVL ge^2 gRRLL m4^2 s^2 \[CapitalSigma]\[CapitalPi]+2 CVL ge^2 gRRLL s^3 \[CapitalSigma]\[CapitalPi]+6 CVL ge^2 gRRRR m3^2 m4^2 s \[CapitalSigma]\[CapitalPi]-3 CVL ge^2 gRRRR m3^2 s^2 \[CapitalSigma]\[CapitalPi]-3 CVL ge^2 gRRRR m4^2 s^2 \[CapitalSigma]\[CapitalPi]+2 CVL ge^2 gRRRR s^3 \[CapitalSigma]\[CapitalPi]+6 CVR^2 ge^4 m3^2 m4^2 s \[CapitalSigma]\[CapitalPi]^2+2 CVR^2 ge^4 s^3 \[CapitalSigma]\[CapitalPi]^2+6 CVR ge^2 gLLLL m3^2 m4^2 s \[CapitalSigma]\[CapitalPi]-3 CVR ge^2 gLLLL m3^2 s^2 \[CapitalSigma]\[CapitalPi]-3 CVR ge^2 gLLLL m4^2 s^2 \[CapitalSigma]\[CapitalPi]+2 CVR ge^2 gLLLL s^3 \[CapitalSigma]\[CapitalPi]+6 CVR ge^2 gLLRR m3^2 m4^2 s \[CapitalSigma]\[CapitalPi]+3 CVR ge^2 gLLRR m3^2 s^2 \[CapitalSigma]\[CapitalPi]+3 CVR ge^2 gLLRR m4^2 s^2 \[CapitalSigma]\[CapitalPi]+2 CVR ge^2 gLLRR s^3 \[CapitalSigma]\[CapitalPi]+6 CVR ge^2 gRRLL m3 m4 s^2 \[CapitalSigma]\[CapitalPi]+6 CVR ge^2 gRRRR m3 m4 s^2 \[CapitalSigma]\[CapitalPi]-6 v^2 Subsuperscript[\[Alpha], em, 2] ((gLR^2+gRL^2) (m3^2-m4^2)^2-s (gLR^2 (m3^2+m4^2)+8 gLR gRL m3 m4+gRL^2 (m3^2+m4^2)))-3 gLLLL^2 m3^2 s^2-3 gLLLL^2 m4^2 s^2+3 gLLLL^2 s^3+24 gLLLL gRRLL m3 m4 s^2-3 gLLRR^2 m3^2 s^2-3 gLLRR^2 m4^2 s^2+3 gLLRR^2 s^3+24 gLLRR gRRRR m3 m4 s^2-3 gRRLL^2 m3^2 s^2-3 gRRLL^2 m4^2 s^2+3 gRRLL^2 s^3-3 gRRRR^2 m3^2 s^2-3 gRRRR^2 m4^2 s^2+3 gRRRR^2 s^3)
+
+CoefficientList[\[Sigma]hadrons, CVL][[2]] // Simplify
+
+1/(48 \[Pi] \[CapitalLambda]^4 s) ge^2 \[CapitalSigma]\[CapitalPi] (12 CVR ge^2 m3 m4 s \[CapitalSigma]\[CapitalPi]+6 v Subscript[\[Alpha], em] (gLR m4 (-m3^2+m4^2-s)+gRL m3 (m3^2-m4^2-s))+6 gLLLL m3 m4 s+6 gLLRR m3 m4 s+gRRLL (3 m3^2 (2 m4^2+s)+s (3 m4^2+2 s))+6 gRRRR m3^2 m4^2-3 gRRRR m3^2 s-3 gRRRR m4^2 s+2 gRRRR s^2)
+
+CoefficientList[\[Sigma]hadrons, CVL][[3]] // Simplify
+
+(ge^4 \[CapitalSigma]\[CapitalPi]^2 (3 m3^2 m4^2+s^2))/(24 \[Pi] \[CapitalLambda]^4 s)
+
+temp = CoefficientList[\[Sigma]hadrons, CVL][[1]];
+
+CoefficientList[temp, CVR][[2]] // Simplify
+
+(ge^2 \[CapitalSigma]\[CapitalPi] (6 v Subscript[\[Alpha], em] (gLR m3 (m3^2-m4^2-s)+gRL m4 (-m3^2+m4^2-s))+gLLLL (m3^2 (6 m4^2-3 s)+s (2 s-3 m4^2))+6 gLLRR m3^2 m4^2+3 gLLRR m3^2 s+3 gLLRR m4^2 s+2 gLLRR s^2+6 gRRLL m3 m4 s+6 gRRRR m3 m4 s))/(48 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp, CVR][[3]] // Simplify
+
+(ge^4 \[CapitalSigma]\[CapitalPi]^2 (3 m3^2 m4^2+s^2))/(24 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp, CVR][[1]] // Simplify
+
+1/(16 \[Pi] \[CapitalLambda]^4 s^2) (-2 s v Subscript[\[Alpha], em] (gLLLL (gLR m3 (-m3^2+m4^2+s)+2 gRL m4 (m3^2-m4^2+s))+gLLRR (gLR m3 (-m3^2+m4^2+s)+2 gRL m4 (m3^2-m4^2+s))-(gRRLL+gRRRR) (2 gLR m4 (-m3^2+m4^2-s)+gRL m3 (m3^2-m4^2-s)))-2 v^2 Subsuperscript[\[Alpha], em, 2] (gLR^2 (m3^4-m3^2 (2 m4^2+s)+m4^4-m4^2 s)-8 gLR gRL m3 m4 s+gRL^2 (m3^4-m3^2 (2 m4^2+s)+m4^4-m4^2 s))+s^2 (gLLLL^2 (-(m3^2+m4^2-s))+8 gLLLL gRRLL m3 m4-gLLRR^2 (m3^2+m4^2-s)+8 gLLRR gRRRR m3 m4-(gRRLL^2+gRRRR^2) (m3^2+m4^2-s)))
+
+Single out terms
+
+Terms with CVL^1
+
+temp2 = CoefficientList[\[Sigma]hadrons, CVL][[2]] // Simplify
+
+1/(48 \[Pi] \[CapitalLambda]^4 s) ge^2 \[CapitalSigma]\[CapitalPi] (12 CVR ge^2 m3 m4 s \[CapitalSigma]\[CapitalPi]+6 v Subscript[\[Alpha], em] (gLR m4 (-m3^2+m4^2-s)+gRL m3 (m3^2-m4^2-s))+6 gLLLL m3 m4 s+6 gLLRR m3 m4 s+gRRLL (3 m3^2 (2 m4^2+s)+s (3 m4^2+2 s))+6 gRRRR m3^2 m4^2-3 gRRRR m3^2 s-3 gRRRR m4^2 s+2 gRRRR s^2)
+
+CoefficientList[temp2, CVR][[2]] // Simplify
+
+(ge^4 m3 m4 \[CapitalSigma]\[CapitalPi]^2)/(4 \[Pi] \[CapitalLambda]^4)
+
+CoefficientList[temp2, gLLLL][[2]] // Simplify
+
+(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)
+
+CoefficientList[temp2, gLLRR][[2]] // Simplify
+
+(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)
+
+CoefficientList[temp2, gRRLL][[2]] // Simplify
+
+(ge^2 \[CapitalSigma]\[CapitalPi] (3 m3^2 (2 m4^2+s)+s (3 m4^2+2 s)))/(48 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp2, gRRRR][[2]] // Simplify
+
+(ge^2 \[CapitalSigma]\[CapitalPi] (m3^2 (6 m4^2-3 s)+s (2 s-3 m4^2)))/(48 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp2, gLR][[2]] // Simplify
+
+(ge^2 m4 \[CapitalSigma]\[CapitalPi] v Subscript[\[Alpha], em] (-m3^2+m4^2-s))/(8 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp2, gRL][[2]] // Simplify
+
+(ge^2 m3 \[CapitalSigma]\[CapitalPi] v Subscript[\[Alpha], em] (m3^2-m4^2-s))/(8 \[Pi] \[CapitalLambda]^4 s)
+
+Terms with CVR^1
+
+temp2 = CoefficientList[\[Sigma]hadrons, CVR][[2]] // Simplify
+
+1/(48 \[Pi] \[CapitalLambda]^4 s) ge^2 \[CapitalSigma]\[CapitalPi] (12 CVL ge^2 m3 m4 s \[CapitalSigma]\[CapitalPi]+6 v Subscript[\[Alpha], em] (gLR m3 (m3^2-m4^2-s)+gRL m4 (-m3^2+m4^2-s))+gLLLL (m3^2 (6 m4^2-3 s)+s (2 s-3 m4^2))+6 gLLRR m3^2 m4^2+3 gLLRR m3^2 s+3 gLLRR m4^2 s+2 gLLRR s^2+6 gRRLL m3 m4 s+6 gRRRR m3 m4 s)
+
+CoefficientList[temp2, CVL][[2]] // Simplify
+
+(ge^4 m3 m4 \[CapitalSigma]\[CapitalPi]^2)/(4 \[Pi] \[CapitalLambda]^4)
+
+CoefficientList[temp2, gLLLL][[2]] // Simplify
+
+(ge^2 \[CapitalSigma]\[CapitalPi] (m3^2 (6 m4^2-3 s)+s (2 s-3 m4^2)))/(48 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp2, gLLRR][[2]] // Simplify
+
+(ge^2 \[CapitalSigma]\[CapitalPi] (3 m3^2 (2 m4^2+s)+s (3 m4^2+2 s)))/(48 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp2, gRRLL][[2]] // Simplify
+
+(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)
+
+CoefficientList[temp2, gRRRR][[2]] // Simplify
+
+(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)
+
+CoefficientList[temp2, gLR][[2]] // Simplify
+
+(ge^2 m3 \[CapitalSigma]\[CapitalPi] v Subscript[\[Alpha], em] (m3^2-m4^2-s))/(8 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp2, gRL][[2]] // Simplify
+
+(ge^2 m4 \[CapitalSigma]\[CapitalPi] v Subscript[\[Alpha], em] (-m3^2+m4^2-s))/(8 \[Pi] \[CapitalLambda]^4 s)
+
+Terms with CVL^0, CVR^0
+
+temp3 = CoefficientList[temp, CVR][[1]] // Simplify
+
+1/(16 \[Pi] \[CapitalLambda]^4 s^2) (-2 s v Subscript[\[Alpha], em] (gLLLL (gLR m3 (-m3^2+m4^2+s)+2 gRL m4 (m3^2-m4^2+s))+gLLRR (gLR m3 (-m3^2+m4^2+s)+2 gRL m4 (m3^2-m4^2+s))-(gRRLL+gRRRR) (2 gLR m4 (-m3^2+m4^2-s)+gRL m3 (m3^2-m4^2-s)))-2 v^2 Subsuperscript[\[Alpha], em, 2] (gLR^2 (m3^4-m3^2 (2 m4^2+s)+m4^4-m4^2 s)-8 gLR gRL m3 m4 s+gRL^2 (m3^4-m3^2 (2 m4^2+s)+m4^4-m4^2 s))+s^2 (gLLLL^2 (-(m3^2+m4^2-s))+8 gLLLL gRRLL m3 m4-gLLRR^2 (m3^2+m4^2-s)+8 gLLRR gRRRR m3 m4-(gRRLL^2+gRRRR^2) (m3^2+m4^2-s)))
+
+CoefficientList[temp3, gLR][[3]]
+
+-((v^2 Subsuperscript[\[Alpha], em, 2] (m3^4-m3^2 (2 m4^2+s)+m4^4-m4^2 s))/(8 \[Pi] \[CapitalLambda]^4 s^2))
+
+CoefficientList[temp3, gLR][[2]]
+
+-((gLLLL m3 v Subscript[\[Alpha], em] (-m3^2+m4^2+s))/(8 \[Pi] \[CapitalLambda]^4 s))-(gLLRR m3 v Subscript[\[Alpha], em] (-m3^2+m4^2+s))/(8 \[Pi] \[CapitalLambda]^4 s)+(gRL m3 m4 v^2 Subsuperscript[\[Alpha], em, 2])/(\[Pi] \[CapitalLambda]^4 s)+(m4 v Subscript[\[Alpha], em] (gRRLL+gRRRR) (-m3^2+m4^2-s))/(4 \[Pi] \[CapitalLambda]^4 s)
+
+CoefficientList[temp3, gRL][[3]]
+
+-((v^2 Subsuperscript[\[Alpha], em, 2] (m3^4-m3^2 (2 m4^2+s)+m4^4-m4^2 s))/(8 \[Pi] \[CapitalLambda]^4 s^2))
+
+CoefficientList[temp3, gLR][[2]]
+
+-((gLLLL m3 v Subscript[\[Alpha], em] (-m3^2+m4^2+s))/(8 \[Pi] \[CapitalLambda]^4 s))-(gLLRR m3 v Subscript[\[Alpha], em] (-m3^2+m4^2+s))/(8 \[Pi] \[CapitalLambda]^4 s)+(gRL m3 m4 v^2 Subsuperscript[\[Alpha], em, 2])/(\[Pi] \[CapitalLambda]^4 s)+(m4 v Subscript[\[Alpha], em] (gRRLL+gRRRR) (-m3^2+m4^2-s))/(4 \[Pi] \[CapitalLambda]^4 s)
+
+temp4 = CoefficientList[temp3, gLR][[1]];
+temp5 = CoefficientList[temp4, gRL][[1]]
+
+(gLLLL^2 (-(m3^2+m4^2-s))+8 gLLLL gRRLL m3 m4-gLLRR^2 (m3^2+m4^2-s)+8 gLLRR gRRRR m3 m4-(gRRLL^2+gRRRR^2) (m3^2+m4^2-s))/(16 \[Pi] \[CapitalLambda]^4)
+
+Make array summarizing info
+
+Coup[x_] := 
+ Boole[x == 1] CVL + Boole[x == 2] CVR + Boole[x == 3] gLR + 
+  Boole[x == 4] gRL + Boole[x == 5] gLLLL + Boole[x == 6] gLLRR + 
+  Boole[x == 7] gRRLL + Boole[x == 8] gRRRR
+
+test = {{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0,
+     0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 
+    0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0,
+     0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+Do[test[[i + 1, j + 1]] = 
+  Boole[i >= j] Coefficient[\[Sigma]hadrons, Coup[i] Coup[j]], {i, 1, 8}, {j, 
+  1, 8}]
+Do[test[[1, i + 1]] = Coup[i], {i, 1, 8}]
+Do[test[[i + 1, 1]] = Coup[i], {i, 1, 8}]
+
+test // Simplify
+
+(0	CVL	CVR	gLR	gRL	gLLLL	gLLRR	gRRLL	gRRRR
+CVL	(ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0	0
+CVR	(ge^4 m3 m4 \[CapitalSigma]\[CapitalPi]^2)/(4 \[Pi] \[CapitalLambda]^4)	(ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0
+gLR	-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0	0
+gRL	(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4 v^2 Subsuperscript[\[Alpha], em, 2])/(\[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0
+gLLLL	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0	0
+gLLRR	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0
+gRRLL	(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0
+gRRRR	(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	0	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))
+
+)
+
+writing purposes
+
+test=(0	CVL	CVR	gLR	gRL	gLLLL	gLLRR	gRRLL	gRRRR
+CVL	(ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0	0
+CVR	(ge^4 m3 m4 \[CapitalSigma]\[CapitalPi]^2)/(4 \[Pi] \[CapitalLambda]^4)	(ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0
+gLR	-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0	0
+gRL	(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4 v^2 Subsuperscript[\[Alpha], em, 2])/(\[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0
+gLLLL	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0	0
+gLLRR	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0
+gRRLL	(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0
+gRRRR	(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	0	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))
+
+)
+
+(0	CVL	CVR	gLR	gRL	gLLLL	gLLRR	gRRLL	gRRRR
+CVL	(ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0	0
+CVR	(ge^4 m3 m4 \[CapitalSigma]\[CapitalPi]^2)/(4 \[Pi] \[CapitalLambda]^4)	(ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0
+gLR	-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0	0
+gRL	(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4 v^2 Subsuperscript[\[Alpha], em, 2])/(\[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0
+gLLLL	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0	0
+gLLRR	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0
+gRRLL	(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0
+gRRRR	(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	0	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))
+
+)
+
+temp = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0,
+    0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0,
+    0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}
+
+(0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0
+
+)
+
+Do[temp[[i, j]] = test[[i + 1, j + 1]], {i, 1, 8}, {j, 1, 8}]
+
+temp
+
+((ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0	0
+(ge^4 m3 m4 \[CapitalSigma]\[CapitalPi]^2)/(4 \[Pi] \[CapitalLambda]^4)	(ge^4 (3 m3^2 m4^2+s^2) \[CapitalSigma]\[CapitalPi]^2)/(24 \[Pi] s \[CapitalLambda]^4)	0	0	0	0	0	0
+-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0	0
+(ge^2 m3 (m3^2-m4^2-s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((ge^2 m4 (m3^2-m4^2+s) v \[CapitalSigma]\[CapitalPi] Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4 v^2 Subsuperscript[\[Alpha], em, 2])/(\[Pi] s \[CapitalLambda]^4)	((-m3^4+(2 m4^2+s) m3^2-m4^4+m4^2 s) v^2 Subsuperscript[\[Alpha], em, 2])/(8 \[Pi] s^2 \[CapitalLambda]^4)	0	0	0	0
+(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0	0
+(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(m3 (m3^2-m4^2-s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0	0
+(ge^2 (3 (2 m4^2+s) m3^2+s (3 m4^2+2 s)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))	0
+(ge^2 ((6 m4^2-3 s) m3^2+s (2 s-3 m4^2)) \[CapitalSigma]\[CapitalPi])/(48 \[Pi] s \[CapitalLambda]^4)	(ge^2 m3 m4 \[CapitalSigma]\[CapitalPi])/(8 \[Pi] \[CapitalLambda]^4)	-((m4 (m3^2-m4^2+s) v Subscript[\[Alpha], em])/(4 \[Pi] s \[CapitalLambda]^4))	-((m3 (-m3^2+m4^2+s) v Subscript[\[Alpha], em])/(8 \[Pi] s \[CapitalLambda]^4))	0	(m3 m4)/(2 \[Pi] \[CapitalLambda]^4)	0	-((m3^2+m4^2-s)/(16 \[Pi] \[CapitalLambda]^4))
+
+)
+
+temp[[1, 1]] // TeXForm
+
+\frac{\text{ge}^4 \Sigma \Pi ^2 \left(3 \text{m3}^2 \text{m4}^2+s^2\right)}{24 \pi  \Lambda ^4 s}
+
+temp[[3, 3]] // TeXForm
+
+\frac{v^2 \alpha _{\text{em}}^2 \left(-\text{m3}^4+\text{m3}^2 \left(2 \text{m4}^2+s\right)-\text{m4}^4+\text{m4}^2 s\right)}{8 \pi  \Lambda ^4 s^2}
+
+temp[[5, 5]] // TeXForm
+
+-\frac{\text{m3}^2+\text{m4}^2-s}{16 \pi  \Lambda ^4}
+
+temp[[2, 1]] // TeXForm
+
+\frac{\text{ge}^4 \text{m3} \text{m4} \Sigma \Pi ^2}{4 \pi  \Lambda ^4}
+
+temp[[3, 1]] == temp[[4, 2]]
+
+True
+
+temp[[3, 1]] // TeXForm
+
+-\frac{\text{ge}^2 \text{m4} \Sigma \Pi  v \alpha _{\text{em}} \left(\text{m3}^2-\text{m4}^2+s\right)}{8 \pi  \Lambda ^4 s}
+
+temp[[3, 2]] // TeXForm
+
+\frac{\text{ge}^2 \text{m3} \Sigma \Pi  v \alpha _{\text{em}} \left(\text{m3}^2-\text{m4}^2-s\right)}{8 \pi  \Lambda ^4 s}
+
+temp[[5, 1]] // TeXForm
+
+\frac{\text{ge}^2 \text{m3} \text{m4} \Sigma \Pi }{8 \pi  \Lambda ^4}
+
+temp[[5, 2]] // TeXForm
+
+\frac{\text{ge}^2 \Sigma \Pi  \left(\text{m3}^2 \left(6 \text{m4}^2-3 s\right)+s \left(2 s-3 \text{m4}^2\right)\right)}{48 \pi  \Lambda ^4 s}
+
+temp[[6, 2]] // TeXForm
+
+\frac{\text{ge}^2 \Sigma \Pi  \left(3 \text{m3}^2 \left(2 \text{m4}^2+s\right)+s \left(3 \text{m4}^2+2 s\right)\right)}{48 \pi  \Lambda ^4 s}
+
+temp[[4, 3]] // TeXForm
+
+\frac{\text{m3} \text{m4} v^2 \alpha _{\text{em}}^2}{\pi  \Lambda ^4 s}
+
+temp[[5, 3]] // TeXForm
+
+\frac{\text{m3} v \alpha _{\text{em}} \left(\text{m3}^2-\text{m4}^2-s\right)}{8 \pi  \Lambda ^4 s}
+
+temp[[5, 4]] // TeXForm
+
+-\frac{\text{m4} v \alpha _{\text{em}} \left(\text{m3}^2-\text{m4}^2+s\right)}{4 \pi  \Lambda ^4 s}
+
+temp[[7, 5]] // TeXForm
+
+\frac{\text{m3} \text{m4}}{2 \pi  \Lambda ^4}
+
+test = temp;
+
+Find sum of \[CapitalPi] functions
+
+\[CapitalPi]d = 
+  s (f\[Rho]0^2/(2 m\[Rho]0^2 (m\[Rho]0^2 - p0)) + f\[Omega]^2/(
+      2 m\[Omega]^2 (m\[Omega]^2 - p0)) + 
+      1/p0 Log[Abs[s0d/(s0d - p0)]] (1/(4 \[Pi]^2)) (1 + \[Alpha]s/\[Pi])) /. 
+   p0 -> s;
+
+\[CapitalPi]u = 
+  s (f\[Rho]0^2/(2 m\[Rho]0^2 (m\[Rho]0^2 - p0)) + f\[Omega]^2/(
+      2 m\[Omega]^2 (m\[Omega]^2 - p0)) + 
+      1/p0 Log[Abs[s0u/(s0u - p0)]] (1/(4 \[Pi]^2)) (1 + \[Alpha]s/\[Pi])) /. 
+   p0 -> s;
+
+\[CapitalPi]s = 
+  s (f\[Phi]^2/(m\[Phi]^2 (m\[Phi]^2 - p0)) + 
+      1/p0 Log[Abs[s0s/(s0s - p0)]] (1/(4 \[Pi]^2)) (1 + \[Alpha]s/\[Pi])) /. 
+   p0 -> s;
+
+\[CapitalPi]c = 
+  s (fJ\[CapitalPsi]^2/(mJ\[CapitalPsi]^2 (mJ\[CapitalPsi]^2 - p0)) + 
+      f\[CapitalPsi]p^2/(m\[CapitalPsi]p^2 (m\[CapitalPsi]p^2 - p0)) + 
+      1/p0 Log[Abs[s0c/(s0c - p0)]] (1/(4 \[Pi]^2)) (1 + \[Alpha]s/\[Pi])) /. 
+   p0 -> s;
+
+\[CapitalPi]b = 
+  s (f\[CapitalUpsilon]^2/(m\[CapitalUpsilon]^2 (m\[CapitalUpsilon]^2 - p0)) +
+       f\[CapitalUpsilon]p^2/(
+      m\[CapitalUpsilon]p^2 (m\[CapitalUpsilon]p^2 - p0)) + 
+      f\[CapitalUpsilon]pp^2/(
+      m\[CapitalUpsilon]pp^2 (m\[CapitalUpsilon]pp^2 - p0)) + 
+      f\[CapitalUpsilon]ppp^2/(
+      m\[CapitalUpsilon]ppp^2 (m\[CapitalUpsilon]ppp^2 - p0)) + 
+      1/p0 Log[Abs[s0b/(s0b - p0)]] (1/(4 \[Pi]^2)) (1 + \[Alpha]s/\[Pi])) /. 
+   p0 -> s;
+
+SomePie = \[CapitalPi]u + \[CapitalPi]d + \[CapitalPi]s + \[CapitalPi]c + \
+\[CapitalPi]b
+
+s (((\[Alpha]s/\[Pi]+1) log(\[LeftBracketingBar]s0c/(s0c-s)\[RightBracketingBar]))/(4 \[Pi]^2 s)+fJ\[CapitalPsi]^2/(mJ\[CapitalPsi]^2 (mJ\[CapitalPsi]^2-s))+f\[CapitalPsi]p^2/(m\[CapitalPsi]p^2 (m\[CapitalPsi]p^2-s)))+s (((\[Alpha]s/\[Pi]+1) log(\[LeftBracketingBar]s0d/(s0d-s)\[RightBracketingBar]))/(4 \[Pi]^2 s)+f\[Rho]0^2/(2 m\[Rho]0^2 (m\[Rho]0^2-s))+f\[Omega]^2/(2 m\[Omega]^2 (m\[Omega]^2-s)))+s (((\[Alpha]s/\[Pi]+1) log(\[LeftBracketingBar]s0u/(s0u-s)\[RightBracketingBar]))/(4 \[Pi]^2 s)+f\[Rho]0^2/(2 m\[Rho]0^2 (m\[Rho]0^2-s))+f\[Omega]^2/(2 m\[Omega]^2 (m\[Omega]^2-s)))+s (((\[Alpha]s/\[Pi]+1) log(\[LeftBracketingBar]s0b/(s0b-s)\[RightBracketingBar]))/(4 \[Pi]^2 s)+f\[CapitalUpsilon]^2/(m\[CapitalUpsilon]^2 (m\[CapitalUpsilon]^2-s))+f\[CapitalUpsilon]p^2/(m\[CapitalUpsilon]p^2 (m\[CapitalUpsilon]p^2-s))+f\[CapitalUpsilon]pp^2/(m\[CapitalUpsilon]pp^2 (m\[CapitalUpsilon]pp^2-s))+f\[CapitalUpsilon]ppp^2/(m\[CapitalUpsilon]ppp^2 (m\[CapitalUpsilon]ppp^2-s)))+s (((\[Alpha]s/\[Pi]+1) log(\[LeftBracketingBar]s0s/(s0s-s)\[RightBracketingBar]))/(4 \[Pi]^2 s)+f\[Phi]^2/(m\[Phi]^2 (m\[Phi]^2-s)))
+
+Plot \[CapitalSigma]\[CapitalPi]
+
+{f\[Rho]0, f\[Omega], f\[Phi], fJ\[CapitalPsi], f\[CapitalPsi]p, 
+   f\[CapitalUpsilon], f\[CapitalUpsilon]p, f\[CapitalUpsilon]pp, 
+   f\[CapitalUpsilon]ppp} = 
+  10^-3 {209.4, 209.4, 241, 418, 294, 649, 481, 539, 
+    f\[CapitalUpsilon]pppinMeV}(*GeV; values from QuarktoniumDecays*);
+
+f\[CapitalUpsilon]pppinMeV = 0(*341*)(*https://arxiv.org/pdf/1508.06131.pdf*);
+
+{m\[Rho]0, m\[Omega], m\[Phi], mJ\[CapitalPsi], m\[CapitalPsi]p, 
+   m\[CapitalUpsilon], m\[CapitalUpsilon]p, m\[CapitalUpsilon]pp, 
+   m\[CapitalUpsilon]ppp} =(*GeV; values from PDG*)
+  10^-3 {775, 783, 1019, 3096, 3686, 9460, 10023, 10355, 10579.4};
+
+{s0d, s0u, s0s, s0c, s0b} =(*GeV^2; 
+  values from QuarktoniumDecays and eyeballing; 
+  take to be end of resonance*){1.5 , 1.5, 1.95, 4, 10.5^2};
+
+\[Alpha]s = 0.1181(*PDG*);
+LogLinearPlot[{Abs[SomePie]} // N, {s, .5, 120}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+
+
+
+(*Clear[f\[Rho]0,f\[Omega],f\[Phi],fJ\[CapitalPsi],f\[CapitalPsi]p,f\
+\[CapitalUpsilon],f\[CapitalUpsilon]p,f\[CapitalUpsilon]pp,m\[Rho]0,m\[Omega],\
+m\[Phi],mJ\[CapitalPsi],m\[CapitalPsi]p,m\[CapitalUpsilon],m\[CapitalUpsilon]\
+p,m\[CapitalUpsilon]pp,s0d,s0u,s0s,s0c,s0b,\[Alpha]s]*)
+
+Plot[{Abs[\[CapitalPi]d]} // N, {s, 0, 15}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+Plot[{Abs[\[CapitalPi]u]} // N, {s, 0, 15}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+Plot[{Abs[\[CapitalPi]s]} // N, {s, 0, 15}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+Plot[{Abs[\[CapitalPi]c]} // N, {s, 0, 15}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+Plot[{Abs[\[CapitalPi]b]} // N, {s, 0, 120}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+
+
+
+
+
+
+
+
+
+
+
+Get constraints on couplings
+
+((1.975 (10^-16)(*m*))/1(*GeV^-1*))^2 (1(*nb*)/(10^-37)(*m^2*))
+
+390063.
+
+((1.975 (10^-16)(*m*))/1(*GeV^-1*))^2 ((10^6)(*fb*)/(10^-37)(*m^2*))
+
+3.90063*10^11
+
+me = 0.00051(*GeV/c^2*); m\[Mu] = 0.105; m\[Tau] = 1.777;
+
+\[Sigma]1 = test[[1, 1]]
+s = 10.58^2;
+SomePie
+\[Sigma]1 = \[Sigma]1 /. {ge -> Sqrt[ ((4 \[Pi])/137)], m3 -> me, 
+   m4 -> m\[Tau], s -> 10.58^2, \[CapitalSigma]\[CapitalPi] -> SomePie}
+\[Sigma]1 = \[Sigma]1 ((1.975 (10^-16)(*m*))/1(*GeV^-1*))^2 ((10^6)(*fb*)/(
+   10^-37)(*m^2*))
+Clear[s]
+
+(ge^4 \[CapitalSigma]\[CapitalPi]^2 (3 m3^2 m4^2+s^2))/(24 \[Pi] \[CapitalLambda]^4 s)
+
+-0.647974
+
+0.00524449/\[CapitalLambda]^4
+
+2.04568*10^9/\[CapitalLambda]^4
+
+Sqrt[9.2/\!\(TraditionalForm\`2.0456808027819924`*^9\)] // ScientificForm
+
+6.70618*10^(-5)
+
+GetConstraint[\[Sigma]th_, \[Sigma]exp_, m3p_, m4p_, 
+  sp_] := \[Sigma]exp(*fb*)/(\[Sigma]th (\[CapitalLambda]^4) ((
+         1.975 (10^-16)(*m*))/1(*GeV^-1*))^2 ((10^6)(*fb*)/(
+         10^-37)(*m^2*))) /. {ge -> Sqrt[ ((4 \[Pi])/137)], m3 -> m3p, 
+      m4 -> m4p, s -> sp, \[CapitalSigma]\[CapitalPi] -> SomePie, 
+      v -> 246(*GeV*), Subscript[\[Alpha], em] -> 1/137} /. {s -> sp} // 
+   Sqrt // ScientificForm
+
+input = test[[1, 1]];
+GetConstraint[input, 9.2, me, m\[Tau], 10.58^2] // Simplify
+GetConstraint[input, 3.8, m\[Mu], m\[Tau], 10.58^2] // Simplify
+
+(5.51617*10^(-1)) Sqrt[1/(1. f\[CapitalUpsilon]pppinMeV^2+8.22551*10^(3))^2]
+
+(3.54514*10^(-1)) Sqrt[1/(1. f\[CapitalUpsilon]pppinMeV^2+8.22551*10^(3))^2]
+
+input = test[[3, 3]];
+GetConstraint[input, 9.2, me, m\[Tau], 10.58^2] // Simplify
+GetConstraint[input, 3.8, m\[Mu], m\[Tau], 10.58^2] // Simplify
+
+8.18925*10^(-5)
+
+5.25315*10^(-5)
+
+input = test[[5, 5]];
+GetConstraint[input, 9.2, me, m\[Tau], 10.58^2] // Simplify
+GetConstraint[input, 3.8, m\[Mu], m\[Tau], 10.58^2] // Simplify
+
+3.30134*10^(-6)
+
+2.12183*10^(-6)
+
+\[Sigma]hadronsNum = \[Sigma]hadrons /. {ge -> Sqrt[ ((4 \[Pi])/137)], 
+     m3 -> m\[Mu], m4 -> m\[Tau], 
+     s -> 10.58^2, \[CapitalSigma]\[CapitalPi] -> SomePie, v -> 246, 
+     Subscript[\[Alpha], em] -> 1/137} // Simplify;
+\[Sigma]hadronsNum = 
+ StandardForm[\[Sigma]hadronsNum] /. s -> 10.58^2 // Simplify
+
+1/\[CapitalLambda]^4 (0. + 0.00524454 CVL^2 + 0.00524454 CVR^2 + 
+   2.16386 gLLLL^2 + 2.16386 gLLRR^2 - 0.00771266 gLLLL gLR - 
+   0.00771266 gLLRR gLR + 0.00353029 gLR^2 - 0.246779 gLLLL gRL - 
+   0.246779 gLLRR gRL + 0.00171074 gLR gRL + 0.00353029 gRL^2 + 
+   0.0296959 gLLLL gRRLL - 0.246779 gLR gRRLL - 0.00771266 gRL gRRLL + 
+   2.16386 gRRLL^2 + 
+   CVL (0.0000524518 CVR - 0.000441249 gLLLL - 0.000441249 gLLRR + 
+      0.00733374 gLR + 0.000458407 gRL - 0.0919858 gRRLL - 0.0844922 gRRRR) + 
+   CVR (-0.0844922 gLLLL - 0.0919858 gLLRR + 0.000458407 gLR + 
+      0.00733374 gRL - 0.000441249 gRRLL - 0.000441249 gRRRR) + 
+   0.0296959 gLLRR gRRRR - 0.246779 gLR gRRRR - 0.00771266 gRL gRRRR + 
+   2.16386 gRRRR^2)
+
+\[Sigma]hadronsNum = \[Sigma]hadronsNum ((1.975 (10^-16)(*m*))/
+    1(*GeV^-1*))^2 ((10^6)(*fb*)/(10^-37)(*m^2*)) // TraditionalForm
+
+3.90063*10^11 1/\[CapitalLambda]^4 (0. +0.00524454 CVL^2+0.00524454 CVR^2+2.16386 gLLLL^2+2.16386 gLLRR^2-0.00771266 gLLLL gLR-0.00771266 gLLRR gLR+0.00353029 gLR^2-0.246779 gLLLL gRL-0.246779 gLLRR gRL+0.00171074 gLR gRL+0.00353029 gRL^2+0.0296959 gLLLL gRRLL-0.246779 gLR gRRLL-0.00771266 gRL gRRLL+2.16386 gRRLL^2+CVL (0.0000524518 CVR-0.000441249 gLLLL-0.000441249 gLLRR+0.00733374 gLR+0.000458407 gRL-0.0919858 gRRLL-0.0844922 gRRRR)+CVR (-0.0844922 gLLLL-0.0919858 gLLRR+0.000458407 gLR+0.00733374 gRL-0.000441249 gRRLL-0.000441249 gRRRR)+0.0296959 gLLRR gRRRR-0.246779 gLR gRRRR-0.00771266 gRL gRRRR+2.16386 gRRRR^2)
+
+Coup[x_] := 
+ Boole[x == 1] CVL + Boole[x == 2] CVR + Boole[x == 3] gLR + 
+  Boole[x == 4] gRL + Boole[x == 5] gLLLL + Boole[x == 6] gLLRR + 
+  Boole[x == 7] gRRLL + Boole[x == 8] gRRRR
+
+testNum = {{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0,
+     0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 
+    0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0,
+     0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+Do[testNum[[i, j]] = 
+  Boole[i >= j] Coefficient[\[Sigma]hadronsNum, Coup[i] Coup[j]], {i, 1, 
+  8}, {j, 1, 8}]
+
+testNum
+
+(0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+
+)
+
+Figure out why SomePie is so small at Babar energy of s=10.58^2 (answer: because did not include Y(4S) resonance)
+
+SomePie /. s -> 10.51^2
+
+-0.624317
+
+SomePie /. s -> 10.501^2
+
+-0.569819
+
+SomePie /. s -> 10.5001^2
+
+-0.509942
+
+SomePie /. s -> 10.50001^2
+
+-0.449489
+
+SomePie /. s -> 10.5000001^2
+
+-0.328461
+
+SomePie /. s -> 10.50000001^2
+
+-0.267943
+
+\[CapitalPi]b1 = 
+  s (f\[CapitalUpsilon]^2/(
+     m\[CapitalUpsilon]^2 (m\[CapitalUpsilon]^2 - p0))) /. p0 -> s;
+\[CapitalPi]b2 = 
+  s (f\[CapitalUpsilon]p^2/(
+     m\[CapitalUpsilon]p^2 (m\[CapitalUpsilon]p^2 - p0))) /. p0 -> s;
+
+\[CapitalPi]b3 = 
+  s (f\[CapitalUpsilon]pp^2/(
+     m\[CapitalUpsilon]pp^2 (m\[CapitalUpsilon]pp^2 - p0))) /. p0 -> s;
+\[CapitalPi]b4 = 
+  s (1/p0 Log[Abs[s0b/(s0b - p0)]] (1/(4 \[Pi]^2)) (1 + \[Alpha]s/\[Pi])) /. 
+   p0 -> s;
+
+Plot[{Abs[\[CapitalPi]b1]} // N, {s, 0, 120}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+Plot[{Abs[\[CapitalPi]b2]} // N, {s, 0, 120}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+Plot[{Abs[\[CapitalPi]b3]} // N, {s, 0, 120}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+Plot[{Abs[\[CapitalPi]b4]} // N, {s, 0, 120}, 
+ AxesLabel -> {"s(\!\(\*SuperscriptBox[\(GeV\), \(2\)]\))", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+
+
+
+
+
+
+
+
+
+Plot[{Abs[\[CapitalPi]b4]} // N, {s, 110, 111}, 
+ AxesLabel -> {"\!\(\*SqrtBox[\(s\)]\)(GeV)", 
+   "\[CapitalSigma]\[CapitalPi] (dimensionless)"}, PlotRange -> {0, 10}]
+
+
+
+\[CapitalPi]b4
+
+0.0262825 log(110.25/\[LeftBracketingBar]110.25 -s\[RightBracketingBar])
